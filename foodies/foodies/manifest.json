@@ -1,18 +1,19 @@
 {
-    "name": "Zomato",
-    "short_name": "Zomato",
-    "start_url": "/index.php",
+    "name": "Foodies",
+    "short_name": "Foodies",
+    "description": "A delicious food app.",
+    "start_url": "/index.html",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#ff5733",
     "icons": [
       {
-        "src": "./assets/logo.png",
+        "src": "./assets/logo10.png",
         "sizes": "192x192",
         "type": "image/png"
       },
       {
-        "src": "./assets/logo.png",
+        "src": "./assets/logotop10.png",
         "sizes": "512x512",
         "type": "image/png"
       }
