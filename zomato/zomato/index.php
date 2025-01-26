@@ -39,9 +39,6 @@
         </div>
       </section>
       <section class="video__footage__container">
-        <div class="video__footage">
-         <iframe width="560" height="315" src="https://www.youtube.com/embed/yaKxAjSo3sw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="chef__video"></iframe>
-        </div>
         <div class="video__footage__text">
           <p>Your food will be prepared safely with an experienced chef, without compromising on the quality and hygiene.</p>
         </div>
