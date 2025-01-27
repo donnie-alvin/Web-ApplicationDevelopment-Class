@@ -1,3 +1,4 @@
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
       navigator.serviceWorker.register('sw.js')
@@ -45,28 +46,28 @@ if ('serviceWorker' in navigator) {
   //}
   
   // Listen for online status 
-  window.addEventListener("online");
+ // window.addEventListener("online", syncOrders);
 
-  let deferredPrompt;
-const installButton = document.getElementById("install-button");
+  //let deferredPrompt;
+//const installButton = document.getElementById("install-button");
 
-window.addEventListener("beforeinstallprompt", (event) => {
-  event.preventDefault();
-  deferredPrompt = event;
-  installButton.style.display = "block";
+//window.addEventListener("beforeinstallprompt", (event) => {
+  //event.preventDefault();
+  //deferredPrompt = event;
+  //installButton.style.display = "block";
 
-  installButton.addEventListener("click", () => {
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then((choiceResult) => {
-      if (choiceResult.outcome === "accepted") {
-        console.log("User accepted the install prompt");
-      } else {
-        console.log("User dismissed the install prompt");
-      }
-      deferredPrompt = null;
-    });
-  });
-});
+  //installButton.addEventListener("click", () => {
+    //deferredPrompt.prompt();
+    //deferredPrompt.userChoice.then((choiceResult) => {
+      //if (choiceResult.outcome === "accepted") {
+        //console.log("User accepted the install prompt");
+      //} else {
+        //console.log("User dismissed the install prompt");
+      //}
+      //deferredPrompt = null;
+    //});
+  //});
+//});
 
 window.addEventListener("appinstalled", () => {
   console.log("PWA installed");

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#ffffff">
-  <title>Zomato</title>
+  <title>Foodies</title>
   <link href="style.css" rel="stylesheet" type="text/css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,11 +17,11 @@
   <header>
     <nav class="navbar">
       <div class="navbar__brand">
-        <img src="./assets/logo.png" alt="logo" class="brand__logo"/>
+        <img src="./assets/logotop.png" alt="logo" class="brand__logo"/>
       </div>
       <div class="navbar__nav__items">
         <div class="nav__item">
-          <button class="primary__button">Order Food</button>
+          <button class="primary__button" type="button" id="orderBtn">Order Food</button>
         </div>
       </div>
     </nav>
@@ -35,7 +35,7 @@
         </div>
         <div class="hero__description">
           <h1 class="text__heading">Order food from favourite restaurants near you.</h1>
-       <button class="primary__button">Order Now</button>
+       <button class="primary__button" id="orderBtn1" type="button">Order Now</button>
         </div>
       </section>
       <section class="video__footage__container">
@@ -109,10 +109,10 @@
                 When a man's stomach is full, he is happier for it.
               </h3>
       </section>
-    <button id="install-button" class="primary__button" style="display: none;">Install App</button>
+    
   </main>
   <footer>
-    <img src="./assets/logo.png" alt="logo">
+    <img src="./assets/logotop20.png" alt="logo">
     <ul>
       <li>Pricing</li>
       <li>Terms and condition</li>
@@ -121,5 +121,15 @@
       <li>Contact</li>
     </ul>
   </footer>
+  <script>
+     document.getElementById('orderBtn').addEventListener('click', function() {
+    // Redirect to the order.html page
+    window.location.href = 'order.html';
+  });
+  document.getElementById('orderBtn1').addEventListener('click', function() {
+    // Redirect to the order.html page
+    window.location.href = 'order.html';
+  });
+  </script>
 </body>
 </html>
