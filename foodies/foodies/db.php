@@ -4,7 +4,7 @@ $username = "root"; // Your database username
 $password = ""; // Your database password
 $dbname = "zomato"; // Your database name here 
 
-// Create connection
+// Create connectiongmjgmjgmjgmghk
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 // Check connection
