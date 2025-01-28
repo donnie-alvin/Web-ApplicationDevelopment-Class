@@ -7,7 +7,7 @@ $dbname = "zomato"; // Your database name here
 // Create connectiongmjgmjgmjgmghk
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Check connection
+// Check connection on db
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
