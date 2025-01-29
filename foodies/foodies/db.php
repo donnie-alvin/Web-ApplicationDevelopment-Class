@@ -12,7 +12,15 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-
+// Function to create a new user
+function createUser($name, $email, $password) {
+    global $conn;
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+    $stmt = $conn->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
+    $stmt->bind_param("sss", $name, $email, $hashedPassword);
+    $stmt->execute();
+    $stmt->close();
+}
 
 // Function to create a new order
 function createOrder($userId, $foodItem, $quantity) {
