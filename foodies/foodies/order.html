@@ -15,7 +15,10 @@
 </head>
 <body>
   <header>
-
+    <nav class="navbar">
+      <div class="navbar__brand">
+        <img src="./assets/logotop.png" alt="logo" class="brand__logo"/>
+      </div>
       <div class="navbar__nav__items">
         <div class="nav__item">
           <button class="primary__button" type="button" id="homeBtn">Home</button>
@@ -87,12 +90,7 @@
     });
     document.getElementById('order-summary').innerText = summary === 'Your Order Summary:\n' ? 'No items ordered.' : summary;
   });
-  
-  
-  
-
-  
-  
+ 
   </script>
 </body>
 </html>
