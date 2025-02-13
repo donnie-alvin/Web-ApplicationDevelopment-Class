@@ -5,8 +5,8 @@ self.addEventListener('install', function(event) {
       console.log('Cache opened:', cache);
       return cache.addAll([
         "/",
-        "./index.html",
-        "./order.html",
+        "./index.php",
+        "./order.php",
         "./style.css",
         "./manifest.json",
         "./assets/logo.png",
@@ -97,7 +97,7 @@ self.addEventListener('fetch', function(event) {
   //.then(function(cache) {
     //cache.addAll( [
       //"/",
-      //"/index.html",
+      //"/index.php",
       //"/style.css",
       //"/manifest.json",
       //"/assets/logo.png",

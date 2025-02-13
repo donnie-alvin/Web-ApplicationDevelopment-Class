@@ -123,12 +123,12 @@
   </footer>
   <script>
      document.getElementById('orderBtn').addEventListener('click', function() {
-    // Redirect to the order.html page
-    window.location.href = 'order.html';
+    // Redirect to the order.php page
+    window.location.href = 'order.php';
   });
   document.getElementById('orderBtn1').addEventListener('click', function() {
-    // Redirect to the order.html page
-    window.location.href = 'order.html';
+    // Redirect to the order.php page
+    window.location.href = 'order.php';
   });
   </script>
 </body>
