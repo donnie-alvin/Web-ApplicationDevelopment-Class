@@ -75,8 +75,8 @@
   </main>
   <script>
   document.getElementById('homeBtn').addEventListener('click', function() {
-    // Redirect to the index.html page
-    window.location.href = 'index.html';
+    // Redirect to the index.php page
+    window.location.href = 'index.php';
   });
 
   document.getElementById('order-form').addEventListener('submit', function(event) {
