@@ -2,12 +2,12 @@
 $servername = "localhost"; // Your database server
 $username = "root"; // Your database username
 $password = ""; // Your database password
-$dbname = "zomato"; // Your database name
+$dbname = "zomato"; // Your database name here 
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Check connection
+// Check connection on db
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
