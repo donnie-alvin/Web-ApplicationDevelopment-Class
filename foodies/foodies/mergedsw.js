@@ -1,6 +1,14 @@
-// Cache names and assets configuration
-const STATIC_CACHE = 'static-cache-v1';
-const DYNAMIC_CACHE = 'dynamic-cache-v1';
+/**
+ * Service Worker Configuration
+ * Handles caching, offline functionality, and resource management
+ */
+
+// Cache configuration
+const STATIC_CACHE = 'static-cache-v1';  // Cache for static assets
+const DYNAMIC_CACHE = 'dynamic-cache-v1'; // Cache for dynamic content
+const APP_VERSION = '1.0.0';             // Application version for cache management
+
+// List of assets to cache on installation
 const ASSETS_TO_CACHE = [
     '/',
     '/index.php',
@@ -9,6 +17,7 @@ const ASSETS_TO_CACHE = [
     '/app.js',
     '/style.css',
     '/manifest.json',
+    // Image assets
     '/assets/logo.png',
     '/assets/logotop.png',
     '/assets/hero.jpg',
@@ -23,30 +32,69 @@ const ASSETS_TO_CACHE = [
     '/assets/logo-512.png'
 ];
 
-// Install event handler
+/**
+ * Utility function to send messages to all clients
+ * @param {Object} message - Message to send to clients
+ */
+async function sendMessageToClients(message) {
+    const clients = await self.clients.matchAll();
+    clients.forEach(client => {
+        client.postMessage(message);
+    });
+}
+
+/**
+ * Installation Event Handler
+ * Caches static assets and prepares service worker for use
+ */
 self.addEventListener('install', (event) => {
-    console.log('Service Worker: Installing...');
+    console.log('🔧 Service Worker: Installation Started');
     
     event.waitUntil(
         caches.open(STATIC_CACHE)
             .then(cache => {
-                console.log('Service Worker: Caching static assets');
+                sendMessageToClients({
+                    type: 'INSTALL_PROGRESS',
+                    message: 'Caching static assets...'
+                });
+                
                 return cache.addAll(ASSETS_TO_CACHE)
-                    .then(() => console.log('All assets cached successfully'))
-                    .catch(error => console.error('Cache addAll error:', error));
+                    .then(() => {
+                        console.log('✅ All assets cached successfully');
+                        sendMessageToClients({
+                            type: 'INSTALL_SUCCESS',
+                            message: 'Application assets cached successfully'
+                        });
+                    })
+                    .catch(error => {
+                        console.error('❌ Cache installation failed:', error);
+                        sendMessageToClients({
+                            type: 'INSTALL_ERROR',
+                            message: 'Failed to cache assets: ' + error.message
+                        });
+                        throw error;
+                    });
             })
-            .then(() => self.skipWaiting()) // Activate new SW immediately
+            .then(() => self.skipWaiting())
     );
 });
 
-// Activate event handler
+/**
+ * Activation Event Handler
+ * Cleans up old caches and takes control of clients
+ */
 self.addEventListener('activate', (event) => {
-    console.log('Service Worker: Activating...');
+    console.log('🔄 Service Worker: Activation Started');
     
     event.waitUntil(
         Promise.all([
             // Clean up old caches
             caches.keys().then(cacheNames => {
+                sendMessageToClients({
+                    type: 'ACTIVATE_PROGRESS',
+                    message: 'Cleaning old caches...'
+                });
+                
                 return Promise.all(
                     cacheNames
                         .filter(cacheName => 
@@ -54,21 +102,32 @@ self.addEventListener('activate', (event) => {
                             cacheName !== DYNAMIC_CACHE
                         )
                         .map(cacheName => {
-                            console.log('Service Worker: Deleting old cache:', cacheName);
+                            console.log('🗑️ Deleting old cache:', cacheName);
                             return caches.delete(cacheName);
                         })
                 );
             }),
-            // Take control of all clients immediately
             self.clients.claim()
-        ])
+        ]).then(() => {
+            sendMessageToClients({
+                type: 'ACTIVATE_SUCCESS',
+                message: 'Service Worker activated and ready'
+            });
+        }).catch(error => {
+            console.error('❌ Activation failed:', error);
+            sendMessageToClients({
+                type: 'ACTIVATE_ERROR',
+                message: 'Service Worker activation failed: ' + error.message
+            });
+        })
     );
 });
 
-// Fetch event handler with improved caching strategy
+/**
+ * Fetch Event Handler
+ * Manages network requests and implements caching strategy
+ */
 self.addEventListener('fetch', (event) => {
-    console.log('Service Worker: Fetching:', event.request.url);
-
     // Skip non-GET requests
     if (event.request.method !== 'GET') {
         return;
@@ -83,26 +142,32 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.match(event.request)
             .then(cachedResponse => {
-                // Return cached response if available
                 if (cachedResponse) {
-                    console.log('Service Worker: Serving from cache:', event.request.url);
-                    
-                    // Fetch and cache update in background (cache-first with refresh)
+                    // Serve from cache and update in background
                     updateCache(event.request);
-                    
+                    sendMessageToClients({
+                        type: 'CACHE_HIT',
+                        message: 'Serving from cache: ' + event.request.url
+                    });
                     return cachedResponse;
                 }
 
-                // If not in cache, fetch from network
+                // Fetch from network
                 return fetchAndCache(event.request);
             })
             .catch(() => {
-                // Return offline fallback for navigation requests
                 if (event.request.mode === 'navigate') {
+                    sendMessageToClients({
+                        type: 'OFFLINE_MODE',
+                        message: 'Loading offline page'
+                    });
                     return caches.match('/offline.html');
                 }
                 
-                // Return error response for other requests
+                sendMessageToClients({
+                    type: 'NETWORK_ERROR',
+                    message: 'Failed to fetch resource'
+                });
                 return new Response(
                     'Network error occurred',
                     {
@@ -117,31 +182,42 @@ self.addEventListener('fetch', (event) => {
     );
 });
 
-// Helper function to fetch and cache
+/**
+ * Fetches and caches a resource
+ * @param {Request} request - The request to fetch and cache
+ */
 async function fetchAndCache(request) {
     try {
         const response = await fetch(request);
         
-        // Only cache valid responses
         if (!response || response.status !== 200 || response.type !== 'basic') {
             return response;
         }
 
-        // Clone the response before caching
         const responseToCache = response.clone();
-        
-        // Cache in dynamic cache
         const cache = await caches.open(DYNAMIC_CACHE);
         await cache.put(request, responseToCache);
         
+        sendMessageToClients({
+            type: 'CACHE_UPDATE',
+            message: 'Resource cached: ' + request.url
+        });
+        
         return response;
     } catch (error) {
-        console.error('Fetch and cache error:', error);
+        console.error('❌ Fetch and cache error:', error);
+        sendMessageToClients({
+            type: 'CACHE_ERROR',
+            message: 'Failed to fetch and cache: ' + error.message
+        });
         throw error;
     }
 }
 
-// Helper function to update cache in background
+/**
+ * Updates cached resource in background
+ * @param {Request} request - The request to update in cache
+ */
 async function updateCache(request) {
     try {
         const response = await fetch(request);
@@ -152,19 +228,45 @@ async function updateCache(request) {
 
         const cache = await caches.open(DYNAMIC_CACHE);
         await cache.put(request, response);
+        
+        sendMessageToClients({
+            type: 'CACHE_UPDATED',
+            message: 'Cache updated in background'
+        });
     } catch (error) {
-        console.error('Cache update error:', error);
+        console.error('❌ Cache update error:', error);
+        sendMessageToClients({
+            type: 'UPDATE_ERROR',
+            message: 'Failed to update cache: ' + error.message
+        });
     }
 }
 
-// Handle API requests
+/**
+ * Handles API requests separately
+ * @param {FetchEvent} event - The fetch event for API requests
+ */
 function handleApiRequest(event) {
     event.respondWith(
         fetch(event.request)
+            .then(response => {
+                sendMessageToClients({
+                    type: 'API_SUCCESS',
+                    message: 'API request successful'
+                });
+                return response;
+            })
             .catch(error => {
-                console.error('API request failed:', error);
+                console.error('❌ API request failed:', error);
+                sendMessageToClients({
+                    type: 'API_ERROR',
+                    message: 'API request failed: ' + error.message
+                });
                 return new Response(
-                    JSON.stringify({ error: 'Network connection failed' }),
+                    JSON.stringify({ 
+                        error: 'Network connection failed',
+                        details: error.message
+                    }),
                     {
                         status: 503,
                         headers: { 'Content-Type': 'application/json' }
@@ -174,9 +276,16 @@ function handleApiRequest(event) {
     );
 }
 
-// Listen for messages from clients
+/**
+ * Message Event Handler
+ * Handles messages from clients
+ */
 self.addEventListener('message', (event) => {
     if (event.data.action === 'skipWaiting') {
         self.skipWaiting();
+        sendMessageToClients({
+            type: 'UPDATE_READY',
+            message: 'New version ready to activate'
+        });
     }
 });
